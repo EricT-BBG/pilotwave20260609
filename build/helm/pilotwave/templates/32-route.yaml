@@ -1,0 +1,55 @@
+{{- if and .Values.ingress.enabled .Values.route.enabled }}
+{{- fail "ingress.enabled and route.enabled cannot both be true" }}
+{{- end }}
+{{- if .Values.route.enabled }}
+{{- if not (.Capabilities.APIVersions.Has "route.openshift.io/v1/Route") }}
+{{- fail "route.enabled=true requires OpenShift Route API route.openshift.io/v1/Route" }}
+{{- end }}
+{{- if not .Values.route.host }}
+{{- fail "route.enabled=true requires route.host" }}
+{{- end }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "pilotwave.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "pilotwave.labels" . | indent 4 }}
+  {{- with .Values.route.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.route.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  path: {{ .Values.route.path | quote }}
+  to:
+    kind: Service
+    name: {{ include "pilotwave.fullname" . }}
+    weight: 100
+  port:
+    targetPort: http
+  wildcardPolicy: {{ .Values.route.wildcardPolicy }}
+  {{- if .Values.route.tls.enabled }}
+  tls:
+    termination: {{ .Values.route.tls.termination }}
+    insecureEdgeTerminationPolicy: {{ .Values.route.tls.insecureEdgeTerminationPolicy }}
+    {{- with .Values.route.tls.key }}
+    key: |-
+{{ . | indent 6 }}
+    {{- end }}
+    {{- with .Values.route.tls.certificate }}
+    certificate: |-
+{{ . | indent 6 }}
+    {{- end }}
+    {{- with .Values.route.tls.caCertificate }}
+    caCertificate: |-
+{{ . | indent 6 }}
+    {{- end }}
+    {{- with .Values.route.tls.destinationCACertificate }}
+    destinationCACertificate: |-
+{{ . | indent 6 }}
+    {{- end }}
+  {{- end }}
+{{- end }}

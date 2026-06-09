@@ -1,0 +1,249 @@
+basePath: /
+definitions:
+  api.CreateResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  router_manager.RouterLantencyData:
+    properties:
+      timestamp:
+        type: integer
+      value:
+        type: number
+    type: object
+  router_manager.RouterLantencyResponse:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/router_manager.RouterLantencyData'
+        type: array
+    type: object
+  router_manager.RouterOPSData:
+    properties:
+      timestamp:
+        type: integer
+      value:
+        type: number
+    type: object
+  router_manager.RouterOPSResponse:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/router_manager.RouterOPSData'
+        type: array
+    type: object
+  router_manager.RouterRequest:
+    properties:
+      name:
+        type: string
+      namespace:
+        description: Description string `json:"description"`
+        type: string
+      protocol:
+        type: string
+    type: object
+  router_manager.RouterSuccessRateData:
+    properties:
+      timestamp:
+        type: integer
+      value:
+        type: number
+    type: object
+  router_manager.RouterSuccessRateResponse:
+    properties:
+      metrics:
+        items:
+          $ref: '#/definitions/router_manager.RouterSuccessRateData'
+        type: array
+      successRate:
+        type: number
+      totalReqests:
+        type: integer
+    type: object
+host: localhost:22112
+info:
+  contact: {}
+  license: {}
+  termsOfService: http://brobrodge.com/
+  title: Pilotwave Swagger
+  version: "1.0"
+paths:
+  /api/v1/router/{routerId}/lantency:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: router name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - collectionFormat: multi
+        description: service
+        in: query
+        items:
+          type: string
+        name: service
+        required: true
+        type: array
+      - description: startTime
+        in: query
+        name: startTime
+        type: integer
+      - description: endTime
+        in: query
+        name: endTime
+        type: integer
+      - default: 30s
+        description: interval
+        in: query
+        name: interval
+        type: string
+      - default: 0.99
+        description: percentage
+        in: query
+        name: percentage
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: http return code
+          schema:
+            $ref: '#/definitions/router_manager.RouterLantencyResponse'
+      security:
+      - Authentication: []
+      summary: Get Router's lantency metrics
+      tags:
+      - router
+  /api/v1/router/{routerId}/ops:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: router name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - collectionFormat: multi
+        description: service
+        in: query
+        items:
+          type: string
+        name: service
+        required: true
+        type: array
+      - description: startTime
+        in: query
+        name: startTime
+        type: integer
+      - description: endTime
+        in: query
+        name: endTime
+        type: integer
+      - default: 30s
+        description: interval
+        in: query
+        name: interval
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: http return code
+          schema:
+            $ref: '#/definitions/router_manager.RouterOPSResponse'
+      security:
+      - Authentication: []
+      summary: Get Router's ops metrics
+      tags:
+      - router
+  /api/v1/router/{routerId}/successRate:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: router name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: namespace
+        in: query
+        name: namespace
+        required: true
+        type: string
+      - collectionFormat: multi
+        description: service
+        in: query
+        items:
+          type: string
+        name: service
+        required: true
+        type: array
+      - description: startTime
+        in: query
+        name: startTime
+        type: integer
+      - description: endTime
+        in: query
+        name: endTime
+        type: integer
+      - default: 30s
+        description: interval
+        in: query
+        name: interval
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: http return code
+          schema:
+            $ref: '#/definitions/router_manager.RouterSuccessRateResponse'
+      security:
+      - Authentication: []
+      summary: Get Router's Request Success Rate metrics
+      tags:
+      - router
+  /api/v1/routers:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/router_manager.RouterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: http return code
+          schema:
+            $ref: '#/definitions/api.CreateResponse'
+      security:
+      - Authentication: []
+      summary: Create Router
+      tags:
+      - router
+securityDefinitions:
+  Authentication:
+    in: header
+    name: authentication
+    type: apiKey
+swagger: "2.0"

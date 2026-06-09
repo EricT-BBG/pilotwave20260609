@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: pilotwave-deny-hello-path
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  action: DENY
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - hello.pilotwave.local
+            paths:
+              - /deny

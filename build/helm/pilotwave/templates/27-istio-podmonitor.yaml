@@ -1,0 +1,48 @@
+{{- if and .Values.istioPodMonitor .Values.istioPodMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ printf "%s-istio-ingressgateway" (include "pilotwave.fullname" .) | trunc 63 | trimSuffix "-" }}
+  namespace: {{ default .Release.Namespace .Values.istioPodMonitor.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "pilotwave.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/component: istio-monitoring
+{{- with .Values.istioPodMonitor.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  {{- with .Values.istioPodMonitor.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.istioPodMonitor.targetNamespace }}
+  selector:
+    matchLabels:
+{{ toYaml .Values.istioPodMonitor.selector | indent 6 }}
+  podMetricsEndpoints:
+    - port: {{ .Values.istioPodMonitor.port }}
+      path: {{ .Values.istioPodMonitor.path | quote }}
+      {{- with .Values.istioPodMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.istioPodMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+      {{- with .Values.istioPodMonitor.relabelings }}
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.istioPodMonitor.metricRelabelings }}
+      metricRelabelings:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+{{- end }}

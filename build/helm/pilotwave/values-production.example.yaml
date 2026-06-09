@@ -1,0 +1,142 @@
+# Example production-oriented values for Pilotwave.
+# Copy and adjust for your cluster. Do not commit live tokens or secrets.
+
+# SQLite-backed deployments should stay single-replica unless Pilotwave is
+# configured for an external database.
+replicaCount: 1
+
+image:
+  repository: docker.io/kenduest/brobridge-pilotwave1
+  tag: dbfbcfb
+  pullPolicy: Always
+
+# Create this secret outside Helm:
+# kubectl -n pilotwave create secret docker-registry dockerhub-regcred ...
+imagePullSecret:
+  existingSecret: dockerhub-regcred
+
+service:
+  # Use ClusterIP when exposing Pilotwave through Ingress or Istio Gateway.
+  # Use LoadBalancer only when your cluster has a LB implementation.
+  type: ClusterIP
+  port: 80
+  targetPort: 22112
+  # loadBalancerIP: 192.168.1.50
+  # loadBalancerSourceRanges:
+  #   - 192.168.1.0/24
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  host: ""
+  annotations: {}
+  tls:
+    enabled: false
+    createSecret: false
+    secretName: ""
+    key: ""
+    certificate: ""
+
+route:
+  enabled: false
+  host: ""
+  tls:
+    enabled: false
+    termination: edge
+    # Prefer --set-file route.tls.key=./tls.key and
+    # --set-file route.tls.certificate=./tls.crt for real certificates.
+    key: ""
+    certificate: ""
+    caCertificate: ""
+    destinationCACertificate: ""
+
+metrics:
+  enabled: true
+  path: /metrics
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  honorLabels: true
+  labels:
+    # Set this to the label selector used by your Prometheus instance.
+    # Example for kube-prometheus-stack: release: kube-prometheus-stack
+    release: prometheus-release
+
+# Enable only when the cluster does not already scrape Istio proxy metrics.
+# This lets the bundled Grafana dashboard show Istio RPS, success rate, and
+# latency by scraping the ingressgateway Envoy metrics port.
+istioPodMonitor:
+  enabled: false
+  namespace: monitoring
+  labels:
+    # Set this to the label selector used by your Prometheus instance.
+    release: prometheus-release
+
+grafanaDashboard:
+  enabled: true
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+
+prometheusRule:
+  enabled: true
+  namespace: monitoring
+  labels:
+    # Set this to the label selector used by your Prometheus instance.
+    release: prometheus-release
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+gateway:
+  tlsSecretNamespace: istio-system
+
+persistence:
+  enabled: true
+  # Production persistence options:
+  # - With a default/named StorageClass, leave existingClaim empty and optionally
+  #   set storageClassName=<class>.
+  # - Without a StorageClass, have the platform/storage team create the PVC
+  #   first, then set existingClaim=<claim-name>. Helm will not create the PVC
+  #   in that mode.
+  # - Keep replicaCount=1 while using SQLite on PVC storage.
+  existingClaim: ""
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+  mountPath: /pilotwaveDB
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  # OCP usually injects an allowed random UID through SCC. Set fixed IDs only
+  # when your cluster/storage policy requires them.
+  # runAsUser: 65532
+  # runAsGroup: 65532
+  # fsGroup: 65532
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+
+readinessProbe:
+  enabled: true
+
+livenessProbe:
+  enabled: true
+
+# Optional node placement. Keep empty unless a dedicated node pool is required.
+nodeSelector: {}
+tolerations: []
+affinity: {}

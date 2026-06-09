@@ -1,0 +1,3228 @@
+openapi: 3.0.0
+info:
+  title: Pilotwave
+  version: '1.0'
+  description: ''
+servers:
+  - url: 'http://localhost:22112/api/v1'
+paths:
+  /users:
+    get:
+      summary: User list
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: number
+                      limit:
+                        type: number
+                      total:
+                        type: number
+                    required:
+                      - page
+                      - limit
+                      - total
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uid:
+                          type: string
+                        username:
+                          type: string
+                        email:
+                          type: string
+                        name:
+                          type: string
+                        permissions:
+                          type: array
+                          items: {}
+                        isDisable:
+                          type: boolean
+                        updatedAt:
+                          type: number
+                        createdAt:
+                          type: number
+                required:
+                  - users
+              examples:
+                example-1:
+                  value:
+                    meta:
+                      page: 1
+                      limit: 20
+                      total: 3
+                    users:
+                      - uid: 513ef57d-5300-4bd1-87d7-d51a989adb3b
+                        username: admin
+                        email: admin@brobridge.com
+                        name: admin
+                        permissions: []
+                        isDisabled: false
+                        updatedAt: 1582277070
+                        createdAt: 1577172082
+      operationId: get-users
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+        - schema:
+            type: number
+          in: query
+          name: page
+          description: ''
+          required: true
+        - schema:
+            type: number
+          in: query
+          name: limit
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: search
+        - schema:
+            type: boolean
+          in: query
+          name: isDisabled
+    post:
+      summary: New user
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    uid: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: post-users
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          description: ''
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+              required:
+                - name
+                - username
+                - password
+                - email
+            examples:
+              example-1:
+                value:
+                  name: test
+                  username: test
+                  password: '1111'
+                  email: test@brobridge.com
+        description: ''
+      description: ''
+  '/user/{userid}/enabled':
+    parameters:
+      - schema:
+          type: string
+        name: userid
+        in: path
+        required: true
+    put:
+      summary: User enabled
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    uid: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-user-userid-enabled
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+              required:
+                - enable
+            examples:
+              example-1:
+                value:
+                  enabled: false
+  '/user/{userid}':
+    parameters:
+      - schema:
+          type: string
+        name: userid
+        in: path
+        required: true
+    get:
+      summary: Get user
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  createdAt:
+                    type: number
+                  email:
+                    type: string
+                  isDisabled:
+                    type: boolean
+                  name:
+                    type: string
+                  permissions:
+                    type: array
+                    items: {}
+                  updatedAt:
+                    type: number
+                  username:
+                    type: string
+                  uid:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    createdAt: 1578021198
+                    email: leon@brobridge.com
+                    isDisabled: false
+                    name: leon
+                    permissions: []
+                    uid: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                    updatedAt: 1596337447
+                    username: leon
+      operationId: get-user-userid
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+    delete:
+      summary: Delete user
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    uid: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: delete-user-userid
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      description: ''
+    put:
+      summary: Upddate user
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    uid: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-user-userid
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  name: test
+                  password: '1111'
+                  email: test@brobridge.com
+        description: ''
+  /auth/signin:
+    post:
+      summary: Sign in
+      tags:
+        - Authenticate
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  token:
+                    type: string
+                  uid:
+                    type: string
+                  username:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+              examples:
+                example-1:
+                  value:
+                    email: admin@brobridge.com
+                    name: admin
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXV
+                    uid: 513ef57d-5300-4bd1-87d7-d51a989adb3b
+                    username: admin
+                    permissions:
+                      - admin
+      operationId: post-auth-signin
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+            examples:
+              example-1:
+                value:
+                  username: admin
+                  password: xxxx
+  /gateways:
+    post:
+      summary: New gateway
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: post-gateways
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                host:
+                  type: string
+                description:
+                  type: string
+                namespace:
+                  type: string
+                ports:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      port:
+                        type: number
+                      protocol:
+                        type: string
+                      pkey:
+                        type: string
+                      cert:
+                        type: string
+              required:
+                - name
+                - host
+                - namespace
+            examples:
+              example-1:
+                value:
+                  name: admin
+                  host: auth.brobridge.com
+                  description: xxxxxxx
+                  namespace: xxxx
+                  ports:
+                    - port: 443
+                      protocol: https
+                      cert: xxxx
+                      pkey: xxxxxx
+      description: ''
+    get:
+      summary: Gateway list
+      operationId: get-gateways
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: number
+                      limit:
+                        type: number
+                      total:
+                        type: number
+                  gateways:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        host:
+                          type: string
+                        description:
+                          type: string
+                        namespace:
+                          type: string
+                        isDisabled:
+                          type: boolean
+                        updatedAt:
+                          type: number
+                        createAt:
+                          type: number
+                        ports:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              port:
+                                type: number
+                              protocol:
+                                type: string
+                                example: 'http, http2, http2, grpc, socket, ftp, tcp, udp, tls'
+              examples:
+                example-1:
+                  value:
+                    meta:
+                      page: 1
+                      limit: 20
+                      total: 3
+                    gateways:
+                      - id: 513ef57d-5300-4bd1-87d7-d51a989adb3b
+                        name: admin
+                        host: auth.brobridge.com
+                        description: xxxxxxx
+                        ports:
+                          - port: 443
+                            protocol: https
+                        namespace: xxxx
+                        isDisabled: false
+                        updatedAt: 1582277070
+                        createdAt: 1577172082
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+        - schema:
+            type: number
+          in: query
+          name: page
+          required: true
+        - schema:
+            type: number
+          in: query
+          name: limit
+          required: true
+          description: '-1 response all'
+        - schema:
+            type: string
+          in: query
+          name: search
+        - schema:
+            type: string
+          in: query
+          name: namespace
+        - schema:
+            type: boolean
+          in: query
+          name: ' isDisabled'
+          description: ''
+      tags:
+        - Gateway
+  '/gateway/{gatewayid}/enabled':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayid
+        in: path
+        required: true
+    put:
+      summary: Enable gateway
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-gateway-id-enabled
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabledd:
+                  type: boolean
+              required:
+                - enabledd
+            examples:
+              example-1:
+                value:
+                  enabled: false
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/gateway/{gatewayid}':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayid
+        in: path
+        required: true
+    get:
+      summary: Get gateway
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  host:
+                    type: string
+                  description:
+                    type: string
+                  namespace:
+                    type: string
+                  isDisabled:
+                    type: boolean
+                  updatedAt:
+                    type: number
+                  createdAt:
+                    type: number
+                  ports:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        port:
+                          type: number
+                        protocol:
+                          type: string
+                        cert:
+                          type: string
+                        pkey:
+                          type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                    name: admin
+                    host: auth.brobridge.com
+                    description: xxxxxxx
+                    ports:
+                      - id: 28081f1c-ffbf-418a-8c5a-9050jduheys6
+                        port: 443
+                        protocol: https
+                        cert: /etc/html/ooo.pem
+                        pkey: /etc/html/ooo.pem
+                    namespace: default
+                    isDisabled: false
+                    updatedAt: 1582277070
+                    createdAt: 1577172082
+      operationId: get-gateway-id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+    put:
+      summary: Update gateway
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-gateway-id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                host:
+                  type: string
+                discription:
+                  type: string
+                namespace:
+                  type: string
+                ports:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      port:
+                        type: number
+                      protocol:
+                        type: string
+                        example: 'http, http2, http2, grpc, socket, ftp, tcp, udp, tls'
+                      cert:
+                        type: string
+                      pkey:
+                        type: string
+            examples:
+              example-1:
+                value:
+                  name: admin
+                  host: auth.brobridge.com
+                  description: xxxxxxx
+                  ports:
+                    - port: 443
+                      protocol: https
+                      pkey: "/etc/html/ooo.pem'"
+                      cert: /etc/html/ooo.pem
+                  namespace: xxxx
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      description: ''
+    delete:
+      summary: Delete gateway
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: delete-gateway-id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/gateway/{gatewayid}/metrics':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayid
+        in: path
+        required: true
+    get:
+      summary: Gateway Dashboard
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+      operationId: get-gateway-id-metrics
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: 'startTime: 1596297600'
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: 'endTime: 1596384000'
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: "interval: '1h'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/gateway/{gatewayid}/routers':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayid
+        in: path
+        required: true
+    get:
+      summary: Gateway routers
+      tags:
+        - Gateway
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  discription:
+                    type: string
+                  host:
+                    type: string
+                  isDisabled:
+                    type: boolean
+                  routers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        protocol:
+                          type: string
+                        isDisabled:
+                          type: boolean
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                    name: admin
+                    host: auth.brobridge.com
+                    description: xxxxxxx
+                    isDisabled: false
+                    routers:
+                      - id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                        name: admin
+                        protocol: http
+                        isDisabled: false
+      operationId: get-gateway-id-routers
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+    put:
+      summary: Router mapping
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-gateway-id-routers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+            examples:
+              example-1:
+                value:
+                  - 28081f1c-ffbf-418a-8c5a-90500365dc61
+                  - 28081f1c-ffbf-418a-8c5a-9050036hwujs
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  /routers:
+    get:
+      summary: Router list
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: number
+                      limit:
+                        type: number
+                      total:
+                        type: number
+                  routers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        discription:
+                          type: string
+                        isDIsabled:
+                          type: boolean
+                        namespace:
+                          type: string
+                        updateAt:
+                          type: number
+                        createAt:
+                          type: number
+              examples:
+                example-1:
+                  value:
+                    meta:
+                      page: 1
+                      limit: 20
+                      total: 3
+                    routers:
+                      - id: 513ef57d-5300-4bd1-87d7-d51a989adb3b
+                        name: admin
+                        description: xxxxxxx
+                        namespace: xxxx
+                        protocol: http
+                        isDisabled: false
+                        updatedAt: 1582277070
+                        createdAt: 1577172082
+      operationId: get-routers
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: page
+          required: true
+        - schema:
+            type: number
+          in: query
+          required: true
+          name: limit
+          description: '-1 response all'
+        - schema:
+            type: string
+          in: query
+          name: search
+        - schema:
+            type: string
+          in: query
+          name: namespace
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+        - schema:
+            type: boolean
+          in: query
+          name: isDisabled
+          description: ''
+    post:
+      summary: 'New router '
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: post-routers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                discription:
+                  type: string
+                namespace:
+                  type: string
+                protocol:
+                  type: string
+                  example: 'http, http2, http2, grpc, socket, ftp, tcp, udp, tls'
+              required:
+                - name
+                - namespace
+                - protocol
+            examples:
+              example-1:
+                value:
+                  name: admin
+                  description: xxxxxxx
+                  namespace: xxxx
+                  protocol: http
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/router/{routerid}/enabled':
+    parameters:
+      - schema:
+          type: string
+        name: routerid
+        in: path
+        required: true
+    put:
+      summary: Enable router
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-router-id-enabled
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+              required:
+                - enabled
+            examples:
+              example-1:
+                value:
+                  enabled: false
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/router/{routerid}':
+    parameters:
+      - schema:
+          type: string
+        name: routerid
+        in: path
+        required: true
+    get:
+      summary: Router information
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  discription:
+                    type: string
+                  namespace:
+                    type: string
+                  protocol:
+                    type: string
+                  isDIsabled:
+                    type: boolean
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                    name: admin
+                    description: xxxxxxx
+                    namespace: default
+                    isDisabled: false
+                    protocol: http
+      operationId: get-router-id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      description: ''
+    delete:
+      summary: 'Delete router '
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: delete-router-id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+    put:
+      summary: Router update
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-router-id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                discription:
+                  type: string
+                namespace:
+                  type: string
+                protocol:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  name: admin
+                  description: xxxxxxx
+                  namespace: xxxx
+                  protocol: http
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/router/{routerid}/metrics':
+    parameters:
+      - schema:
+          type: string
+        name: routerid
+        in: path
+        required: true
+    get:
+      summary: Router Dashboard
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+      operationId: get-router-id-metrics
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: startTime
+        - schema:
+            type: number
+          in: query
+          name: endTime
+        - schema:
+            type: string
+          in: query
+          name: intervel
+  '/router/{routerid}/gateways':
+    parameters:
+      - schema:
+          type: string
+        name: routerid
+        in: path
+        required: true
+    get:
+      summary: Router gateways
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  discription:
+                    type: string
+                  protocol:
+                    type: string
+                  isDisabled:
+                    type: boolean
+                  gateways:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        host:
+                          type: string
+                        isDisabled:
+                          type: boolean
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                    name: admin
+                    protocol: http
+                    description: xxxxxxx
+                    isDisabled: false
+                    gateways:
+                      - id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+                        name: admin
+                        host: auth.brobridge.com
+                        isDisabled: false
+      operationId: get-router-id-gateways
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+    put:
+      summary: Gateway mapping
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: put-router-id-gateways
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+            examples:
+              example-1:
+                value:
+                  - 28081f1c-ffbf-418a-8c5a-90500365dc61
+                  - 28081f1c-ffbf-418a-8c5a-9050036hwujs
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  /router/rule/headers:
+    put:
+      summary: Router rules modification
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      operationId: put-router-rule-headers
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': accessToken"
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  /router/rule/destinations:
+    put:
+      summary: Router rules modification
+      tags:
+        - Router
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      operationId: put-router-rule-destinations
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': accessToken"
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/gateway/{gatewayid}/certificate':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayid
+        in: path
+        required: true
+    post:
+      summary: Certificate
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    path: /etc/xxxxx/ooo.pem
+      operationId: post-gateway-id-certificate
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                category:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  data: xxxxx
+                  type: certificate
+  '/gateway/{gatewayid}/bwlists':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayid
+        in: path
+        required: true
+    get:
+      summary: get bwlsit
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: number
+                      limit:
+                        type: number
+                      total:
+                        type: number
+                  lists:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      domain:
+                        type: string
+                      description:
+                        type: string
+                      category:
+                        type: string
+                      updateAt:
+                        type: number
+                      createAt:
+                        type: number
+              examples:
+                example-1:
+                  value:
+                    meta:
+                      page: 1
+                      limit: 20
+                      total: 3
+                    bwlists:
+                      - id: 513ef57d-5300-4bd1-87d7-d51a989adb3b
+                        domain: '*.bookinfo.com'
+                        description: xxxxxxx
+                        type: blacklist
+                        updatedAt: 1582277070
+                        createdAt: 1577172082
+      operationId: get-gateway-id-bwlists
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: " 'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+        - schema:
+            type: number
+          in: query
+          name: page
+          required: true
+        - schema:
+            type: number
+          in: query
+          name: limit
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: search
+        - schema:
+            type: string
+          in: query
+          name: category
+          description: blacklist (whitelist)
+    post:
+      summary: new bwlist
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: post-gateway-id-bwlists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                desciption:
+                  type: string
+                category:
+                  type: string
+                  example: blacklist(whitelist)
+                  description: 'blacklist, whitelist'
+              required:
+                - domain
+                - category
+            examples:
+              example-1:
+                value:
+                  domain: xxxxx
+                  description: xxxxx
+                  type: blacklist
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: " 'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  '/bwlist/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: delete bwlist
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              examples:
+                example-1:
+                  value:
+                    id: 28081f1c-ffbf-418a-8c5a-90500365dc61
+      operationId: delete-bwlist-id
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: "'Authentication': 'accessToken'"
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: "'Accept': 'application/json'"
+        - schema:
+            type: string
+          in: header
+          name: "'Content-Type': 'application/json'"
+  /cluster/capabilities:
+    get:
+      summary: Get Cluster Capabilities
+      operationId: get-cluster-capabilities
+      tags:
+        - auth
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /gateway/{namespace}/{name}:
+    delete:
+      summary: Delete Gateway
+      operationId: delete-gateway-namespace-name
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get Gateway
+      operationId: get-gateway-namespace-name
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Gateway
+      operationId: put-gateway-namespace-name
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /gateway/{namespace}/{name}/routers:
+    delete:
+      summary: Delete Gateway Router Mapping
+      operationId: delete-gateway-namespace-name-routers
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get Gateway Router Mapping
+      operationId: get-gateway-namespace-name-routers
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Gateway Router Mapping
+      operationId: put-gateway-namespace-name-routers
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /gateways/{namespace}/{name}/routers:
+    post:
+      summary: Create Gateway Router Mapping
+      operationId: post-gateways-namespace-name-routers
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /grafana:
+    get:
+      summary: Get Grafana
+      operationId: get-grafana
+      tags:
+        - router
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /grafana/{grafanaId}:
+    delete:
+      summary: Delete Grafana
+      operationId: delete-grafana-grafanaid
+      tags:
+        - router
+      parameters:
+        - name: grafanaId
+          in: path
+          required: true
+          description: grafanaId
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /grafanas:
+    post:
+      summary: Update Grafana
+      operationId: post-grafanas
+      tags:
+        - router
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /monitoring/test:
+    post:
+      summary: Test Grafana
+      operationId: post-monitoring-test
+      tags:
+        - router
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /namespace/{name}/istio-injection:
+    patch:
+      summary: Patch Namespace Istio Injection
+      operationId: patch-namespace-name-istio-injection
+      tags:
+        - auth
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /namespaces:
+    get:
+      summary: Get Namespaces
+      operationId: get-namespaces
+      tags:
+        - auth
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /router/{namespace}/{name}:
+    delete:
+      summary: Delete Router
+      operationId: delete-router-namespace-name
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get Router
+      operationId: get-router-namespace-name
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Router
+      operationId: put-router-namespace-name
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /router/{namespace}/{name}/gateways:
+    delete:
+      summary: Delete Router Gateway Mapping
+      operationId: delete-router-namespace-name-gateways
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get Router Gateway Mapping
+      operationId: get-router-namespace-name-gateways
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Create Router Gateway Mapping
+      operationId: post-router-namespace-name-gateways
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Router Gateway Mapping
+      operationId: put-router-namespace-name-gateways
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /router/{namespace}/{name}/latency:
+    get:
+      summary: Get Router Latency
+      operationId: get-router-namespace-name-latency
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /router/{namespace}/{name}/ops:
+    get:
+      summary: Get Router OPS
+      operationId: get-router-namespace-name-ops
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /router/{namespace}/{name}/rules:
+    get:
+      summary: Get Router Rule
+      operationId: get-router-namespace-name-rules
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Router Rule
+      operationId: put-router-namespace-name-rules
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /router/{namespace}/{name}/successrate:
+    get:
+      summary: Get Router Success Rate
+      operationId: get-router-namespace-name-successrate
+      tags:
+        - router
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /security/authpolicies:
+    get:
+      summary: Get Authorization Policies
+      operationId: get-security-authpolicies
+      tags:
+        - security
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Create Authorization Policy
+      operationId: post-security-authpolicies
+      tags:
+        - security
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /security/authpolicy/{namespace}/{name}:
+    delete:
+      summary: Delete Authorization Policy
+      operationId: delete-security-authpolicy-namespace-name
+      tags:
+        - security
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get Authorization Policy
+      operationId: get-security-authpolicy-namespace-name
+      tags:
+        - security
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Authorization Policy
+      operationId: put-security-authpolicy-namespace-name
+      tags:
+        - security
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /security/requestauth/{namespace}/{name}:
+    delete:
+      summary: Delete Request Authentication
+      operationId: delete-security-requestauth-namespace-name
+      tags:
+        - security
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get Request Authentication
+      operationId: get-security-requestauth-namespace-name
+      tags:
+        - security
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update Request Authentication
+      operationId: put-security-requestauth-namespace-name
+      tags:
+        - security
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /security/requestauths:
+    get:
+      summary: Get Request Authentications
+      operationId: get-security-requestauths
+      tags:
+        - security
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Create Request Authentication
+      operationId: post-security-requestauths
+      tags:
+        - security
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /user/{userId}:
+    delete:
+      summary: Delete User
+      operationId: delete-user-userid
+      tags:
+        - user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: userId
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    get:
+      summary: Get User
+      operationId: get-user-userid
+      tags:
+        - user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: userId
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      summary: Update User
+      operationId: put-user-userid
+      tags:
+        - user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: userId
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /user/{userId}/enabled:
+    put:
+      summary: Enable User
+      operationId: put-user-userid-enabled
+      tags:
+        - user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: userId
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /user/{userId}/resetpassword:
+    put:
+      summary: Update User Password
+      operationId: put-user-userid-resetpassword
+      tags:
+        - user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: userId
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /gateway/tls-secret/exists:
+    get:
+      summary: Check Gateway TLS secret
+      description: Resolves a Gateway TLS credential name to the configured Kubernetes Secret namespace and reports whether the Secret exists.
+      operationId: get-gateway-tls-secret-exists
+      tags:
+        - gateway
+      parameters:
+        - name: credentialname
+          in: query
+          required: true
+          description: Gateway TLS credential name. Use `namespace/name` to check an explicit Secret namespace; otherwise Pilotwave uses the configured Gateway TLS Secret namespace.
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayTLSSecretExistsResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+  /gateway/{namespace}/{name}/tls-certificates:
+    get:
+      summary: List Gateway TLS certificates
+      description: Returns certificate metadata for TLS-enabled servers on a Gateway. Private keys and raw certificate PEM data are never returned.
+      operationId: get-gateway-namespace-name-tls-certificates
+      tags:
+        - gateway
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          description: namespace
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          description: name
+          schema:
+            type: string
+      security:
+        - Authentication: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatewayTLSCertificatesResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  schemas:
+    GatewayTLSSecretExistsResponse:
+      type: object
+      properties:
+        exists:
+          type: boolean
+        secretNamespace:
+          type: string
+        secretName:
+          type: string
+    GatewayTLSCertificatesResponse:
+      type: object
+      properties:
+        certificates:
+          type: array
+          items:
+            $ref: '#/components/schemas/GatewayTLSCertificate'
+    GatewayTLSCertificate:
+      type: object
+      properties:
+        serverIndex:
+          type: integer
+        port:
+          type: integer
+          format: int32
+        protocol:
+          type: string
+          example: HTTPS
+        hosts:
+          type: array
+          items:
+            type: string
+        credentialName:
+          type: string
+        secretNamespace:
+          type: string
+        secretName:
+          type: string
+        status:
+          type: string
+          enum:
+            - healthy
+            - warning
+            - critical
+            - expired
+            - missing
+            - invalid
+            - unknown
+        reason:
+          type: string
+        daysUntilExpiry:
+          type: integer
+        notBefore:
+          type: string
+          format: date-time
+        notAfter:
+          type: string
+          format: date-time
+        subject:
+          type: string
+        issuer:
+          type: string
+        dnsNames:
+          type: array
+          items:
+            type: string
+        fingerprintSHA256:
+          type: string

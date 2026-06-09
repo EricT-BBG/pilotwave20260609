@@ -1,0 +1,216 @@
+<template>
+  <section class="page">
+    <header class="page-header detail-header detail-header--compact">
+      <div class="detail-header-row">
+        <button class="secondary-button detail-back-button" type="button" @click="goBack">← {{ $t('Form.BackToPolicies') }}</button>
+        <div class="detail-title-card">
+          <div class="detail-title-text">
+            <p class="eyebrow detail-resource-type">{{ $t('System.BlackWhteList') }}</p>
+            <h1 class="detail-header-title">{{ $t('Policy.New') }}</h1>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <form class="panel form-stack" @submit.prevent="submit">
+      <div class="tab-strip">
+        <button class="tab-button active" type="button">{{ $t('Policy.BasicSetting') }}</button>
+      </div>
+
+      <label class="field">
+        <span>{{ $t('Policy.RuleName') }}*</span>
+        <input data-testid="authpolicy-name" v-model.trim="name" placeholder="allow-public-api" required @blur="touched.name = true">
+        <small v-for="error in nameErrors" :key="error" class="field-error">{{ error }}</small>
+      </label>
+
+      <label class="field">
+        <span>{{ $t('Table.Namespace') }}*</span>
+        <select data-testid="authpolicy-namespace" v-model="namespace" required @blur="touched.namespace = true">
+          <option v-for="item in namespaceOptions" :key="item" :value="item">{{ item }}</option>
+        </select>
+        <small v-for="error in spaceErrors" :key="error" class="field-error">{{ error }}</small>
+      </label>
+
+      <label class="field">
+        <span>{{ $t('Policy.ListType') }}*</span>
+        <select data-testid="authpolicy-action" v-model="action" required @blur="touched.action = true">
+          <option v-for="item in actions" :key="item.value" :value="item.value">{{ item.text }}</option>
+        </select>
+        <small v-for="error in actionErrors" :key="error" class="field-error">{{ error }}</small>
+      </label>
+
+      <section class="editor-section">
+        <div class="section-header">
+          <h2>{{ $t('Policy.NewLabel') }}</h2>
+          <button class="secondary-button" type="button" @click="addLabel">+ {{ $t('Policy.NewLabel') }}</button>
+        </div>
+        <LabelItem
+          v-for="(item, i) in labels"
+          :key="'label-' + i"
+          :index="i"
+          :labelKey="item.key"
+          :labelValue="item.value"
+        />
+        <div v-if="!labels.length" class="empty-state compact">{{ $t('Policy.NoLabelsConfigured') }}</div>
+      </section>
+
+      <section class="editor-section">
+        <div class="section-header">
+          <h2>{{ $t('Policy.SetupRule') }}</h2>
+          <button class="secondary-button" type="button" @click="addRule">+ {{ $t('Policy.SetupRule') }}</button>
+        </div>
+        <RuleItem v-for="(item, index) in rules" :key="'rule-' + index" :rule="item" :ruleIndex="index" />
+      </section>
+
+      <div v-if="status === 'create_error'" class="alert alert-error">
+        {{ $t('Alert.CreateFailed') }} {{ error_handle }}
+      </div>
+
+      <div class="page-actions form-actions">
+        <button class="secondary-button" type="button" @click="goBack">{{ $t('Form.Cancel') }}</button>
+        <button class="primary-button" data-testid="authpolicy-submit" type="submit">{{ $t('Form.Submit') }}</button>
+      </div>
+    </form>
+  </section>
+</template>
+
+<script>
+import { mapGetters } from 'vuex';
+import LabelItem from '../../components/policy/LabelItem.vue';
+import RuleItem from '../../components/policy/RuleItem.vue';
+
+const namePattern = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
+
+export default {
+  name: 'NewAuthpolicy',
+  components: {
+    LabelItem,
+    RuleItem,
+  },
+  mounted() {
+    this.$store.commit('AuthPolicy_ResetData');
+  },
+  data() {
+    return {
+      name: '',
+      namespace: 'default',
+      action: 'allow',
+      submitted: false,
+      touched: {
+        name: false,
+        namespace: false,
+        action: false,
+      },
+    }
+  },
+  methods: {
+    goBack () {
+      window.scrollTo(0,0);
+      this.$router.push('/authpolicies');
+    },
+    addRule () {
+      this.$store.commit('AuthPolicy_AddRules')
+    },
+    addLabel () {
+      this.$store.commit('AuthPolicy_AddLabels')
+    },
+    submit () {
+      this.submitted = true;
+      if (this.hasValidationErrors) return;
+
+      this.$store.dispatch('AuthPolicy_NewItem', {
+        name: this.name,
+        namespace: this.namespace,
+        action: this.action,
+        labels: this.labels,
+        rules: this.rules,
+      })
+    },
+  },
+  watch: {
+    status (val) {
+      if (val === 'create_success') this.$router.push('/authpolicies')
+    },
+  },
+  computed: {
+    ...mapGetters({
+      namespaces: 'Auth_GetNamespaces',
+      language: 'Auth_GetLanguage',
+      rules: 'AuthPolicy_GetRules',
+      labels: 'AuthPolicy_GetLabels',
+      status: 'AuthPolicy_GetStatus',
+      error_handle: 'AuthPolicy_GetErrorHandle'
+    }),
+    actions() {
+      return [
+        { text: this.$t('Policy.Allow'), value: 'allow' },
+        { text: this.$t('Policy.Deny'), value: 'deny' },
+        { text: this.$t('Policy.Audit'), value: 'audit' },
+      ];
+    },
+    namespaceOptions() {
+      const namespaces = (this.namespaces || []).filter((item) => item && item !== 'All');
+      return namespaces.length ? namespaces : ['default'];
+    },
+    hasValidationErrors () {
+      return !this.name || !namePattern.test(this.name) || !this.namespace || !this.action;
+    },
+    nameErrors () {
+      if (!this.submitted && !this.touched.name) return [];
+      if (!this.name) return [this.$t('Form.Required')];
+      if (!namePattern.test(this.name)) return [this.$t('Form.Lowercase')];
+      return [];
+    },
+    spaceErrors () {
+      if ((!this.submitted && !this.touched.namespace) || this.namespace) return [];
+      return [this.$t('Form.Required')];
+    },
+    actionErrors () {
+      if ((!this.submitted && !this.touched.action) || this.action) return [];
+      return [this.$t('Form.Required')];
+    },
+  },
+}
+</script>
+
+<style scoped>
+.tab-strip {
+  border-bottom: 1px solid var(--pw-border);
+}
+
+.tab-button {
+  background: var(--pw-primary);
+  border: 0;
+  border-radius: 14px 14px 0 0;
+  color: #fff;
+  font-weight: 800;
+  min-height: 42px;
+  padding: 0 18px;
+}
+
+.editor-section {
+  background: var(--pw-surface-muted);
+  border: 1px solid var(--pw-border);
+  border-radius: 18px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.section-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-header h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.form-actions {
+  border-top: 1px solid var(--pw-border);
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+</style>

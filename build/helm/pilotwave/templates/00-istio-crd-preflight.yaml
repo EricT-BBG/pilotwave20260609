@@ -1,0 +1,19 @@
+{{- $istio := default dict .Values.istio -}}
+{{- if (default false $istio.required) -}}
+{{- $requiredCRDs := default (list
+  "gateways.networking.istio.io"
+  "virtualservices.networking.istio.io"
+  "destinationrules.networking.istio.io"
+  "authorizationpolicies.security.istio.io"
+  "requestauthentications.security.istio.io"
+) $istio.requiredCRDs -}}
+{{- $missing := list -}}
+{{- range $crd := $requiredCRDs -}}
+{{- if not (lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" $crd) -}}
+{{- $missing = append $missing $crd -}}
+{{- end -}}
+{{- end -}}
+{{- if gt (len $missing) 0 -}}
+{{- fail (printf "istio.required=true but required Istio CRDs are not available: %s. Install Istio CRDs first, or set istio.required=false to allow Pilotwave to install before Istio. Note: helm template without a live cluster cannot satisfy lookup-based CRD checks." (join ", " $missing)) -}}
+{{- end -}}
+{{- end -}}

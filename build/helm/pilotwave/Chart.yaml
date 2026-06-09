@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: "1.3.1"
+description: Pilotwave is a service mesh management tool for routing, traffic control, and Istio resource operations.
+name: pilotwave
+version: 1.3.1
+maintainers:
+  - name: Leon
+    email: leon@brobridge.com
+  - name: Jhe
+    email: jhe@brobridge.com
+sources:
+  - https://git.brobridge.com/pilotwave/pilotwave.git
+    #icon: https://raw.githubusercontent.com/BrobridgeOrg/gravity-operator/master/helm/gravity-operator/gravity.png

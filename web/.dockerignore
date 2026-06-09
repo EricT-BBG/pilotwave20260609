@@ -1,0 +1,12 @@
+# Dependency directories
+node_modules/ 
+package-lock.json
+
+# Local files
+dist/
+
+# macOS
+.DS_Store
+
+# Vim swap files
+*.swp

@@ -1,0 +1,148 @@
+{{- $podSecurityContext := .Values.podSecurityContext | default dict }}
+{{- $containerSecurityContext := .Values.securityContext | default dict }}
+{{- $readinessProbe := .Values.readinessProbe | default dict }}
+{{- $livenessProbe := .Values.livenessProbe | default dict }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pilotwave.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "pilotwave.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+{{ include "pilotwave.selectorLabels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pilotwave.labels" . | indent 8 }}
+        tier: frontend
+      {{- with .Values.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "pilotwave.serviceAccountName" . }}
+      {{- with $podSecurityContext }}
+      podSecurityContext:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- $imagePullSecrets := include "pilotwave.imagePullSecrets" . | trim }}
+      {{- if $imagePullSecrets }}
+      imagePullSecrets:
+{{ $imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: pilotwave-config
+          configMap:
+            name: {{ include "pilotwave.configMapName" . }}
+      {{- if .Values.persistence.enabled }}
+        - name: pilotwave-store
+          persistentVolumeClaim:
+            claimName: {{ default (include "pilotwave.pvcName" .) .Values.persistence.existingClaim }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      containers:
+        - name: app-container
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- with $containerSecurityContext }}
+          securityContext:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: pilotwave-config
+              mountPath: /config.toml
+              subPath: config.toml
+          {{- if .Values.persistence.enabled }}
+            - name: pilotwave-store
+              mountPath: {{ .Values.persistence.mountPath | quote }}
+          {{- end }}
+          env:
+            - name: PILOTWAVE_SERVICE_PORT
+              value: {{ .Values.service.targetPort | quote }}
+            - name: PILOTWAVE_DATABASE_TYPE
+              value: {{ .Values.database.type | quote }}
+            - name: PILOTWAVE_DATABASE_DBPATH
+              value: {{ .Values.database.dbpath | quote }}
+            - name: PILOTWAVE_DATABASE_DBNAME
+              value: {{ .Values.database.dbname | quote }}
+            - name: PILOTWAVE_DATABASE_DEBUG_MODE
+              value: {{ .Values.database.debugMode | quote }}
+            - name: PILOTWAVE_AUTH_METHOD
+              value: {{ .Values.auth.method | quote }}
+            - name: PILOTWAVE_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "pilotwave.authSecretName" .) .Values.auth.secret.existingSecret | quote }}
+                  key: {{ include "pilotwave.authSecretKey" . | quote }}
+            - name: PILOTWAVE_GRAFANA_HOST
+              value: {{ .Values.grafana.host | quote }}
+            - name: PILOTWAVE_GRAFANA_PORT
+              value: {{ .Values.grafana.port | quote }}
+            - name: PILOTWAVE_GRAFANA_TOKEN
+              value: {{ .Values.grafana.token | quote }}
+            - name: PILOTWAVE_GRAFANA_TLS
+              value: {{ .Values.grafana.tls | quote }}
+            - name: PILOTWAVE_GRAFANA_SKIP_TLS_VERIFY
+              value: {{ .Values.grafana.skipTlsVerify | quote }}
+            - name: PILOTWAVE_GRAFANA_PROVIDER
+              value: {{ .Values.grafana.provider | quote }}
+            - name: PILOTWAVE_GRAFANA_DATASOURCE_ID
+              value: {{ .Values.grafana.datasourceId | quote }}
+            - name: PILOTWAVE_GATEWAY_TLS_SECRET_NAMESPACE
+              value: {{ .Values.gateway.tlsSecretNamespace | quote }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+              name: pilotwaveport
+              protocol: TCP
+          {{- if $readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ default "/metrics" $readinessProbe.path | quote }}
+              port: {{ default "pilotwaveport" $readinessProbe.port | quote }}
+              {{- with $readinessProbe.scheme }}
+              scheme: {{ . }}
+              {{- end }}
+              {{- with $readinessProbe.httpHeaders }}
+              httpHeaders:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+            {{- with omit $readinessProbe "enabled" "path" "port" "scheme" "httpHeaders" }}
+{{ toYaml . | indent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- if $livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ default "/metrics" $livenessProbe.path | quote }}
+              port: {{ default "pilotwaveport" $livenessProbe.port | quote }}
+              {{- with $livenessProbe.scheme }}
+              scheme: {{ . }}
+              {{- end }}
+              {{- with $livenessProbe.httpHeaders }}
+              httpHeaders:
+{{ toYaml . | indent 16 }}
+              {{- end }}
+            {{- with omit $livenessProbe "enabled" "path" "port" "scheme" "httpHeaders" }}
+{{ toYaml . | indent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+      restartPolicy: Always

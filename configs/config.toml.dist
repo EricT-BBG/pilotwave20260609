@@ -1,0 +1,52 @@
+[service]
+port = 22112
+
+[database]
+type = "sqlite3"
+# dbpath = ":memory:"
+dbpath = "./pilotwaveDB/pilotwave.db"
+dbname = "pilotwave"
+
+#type = "mysql"
+#host = "0.0.0.0"
+#port = 3306
+#username = "test"
+#password = "test"
+#dbname = "eprice"
+debug_mode = false
+
+[auth]
+method = "built-in"
+#method = "ad"
+# Override in production via PILOTWAVE_AUTH_SECRET or the Helm chart (auth.secret.value).
+secret = "change-me"
+
+#[active_directory]
+#host = "13.76.224.93"
+#port = 389
+#tls = false
+#pfx_file = ""
+#pfx_password = ""
+#username = "example@brobridge.com"
+#password = "1234567890"
+#base = "brobridge.com"
+
+[grafana]
+provider = "grafana"
+host = ""
+port = 80
+token = ""
+datasource_id = "1"
+tls = false
+skip_tls_verify = false
+
+[cluster]
+disabled = false
+
+[dev]
+# Local development only. Do not enable in production because startup will force
+# the built-in admin account back to password "admin".
+reset_admin_password = false
+
+[gateway]
+tls_secret_namespace = "istio-system"

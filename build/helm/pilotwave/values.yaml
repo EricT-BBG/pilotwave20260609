@@ -1,0 +1,226 @@
+# Default values for pilotwave.
+
+replicaCount: 1
+
+image:
+  repository: hb.k8sbridge.com/public/pilotwave
+  tag: v1.3
+  pullPolicy: IfNotPresent
+
+# Advanced: raw Kubernetes imagePullSecrets entries. Most installs should use
+# imagePullSecret.existingSecret or imagePullSecret.create instead.
+imagePullSecrets: []
+
+# Simple registry pull secret support. Secrets are namespace-scoped.
+imagePullSecret:
+  # Safe production path: create the secret outside Helm, then set its name here.
+  existingSecret: ""
+  # Dev/test path: let this chart create a registry pull secret.
+  create: false
+  name: ""
+  registry: docker.io
+  username: ""
+  password: ""
+  email: ""
+
+# Deprecated alias for imagePullSecret. Kept for compatibility.
+imageCredentials:
+  create: false
+  name: ""
+  registry: docker.io
+  username: ""
+  password: ""
+  email: ""
+
+service:
+  # Supported modes: ClusterIP, NodePort, LoadBalancer.
+  type: ClusterIP
+  port: 80
+  targetPort: 22112
+  # Set only when service.type=NodePort.
+  # Use 0 to let Kubernetes allocate the node port.
+  nodePort: 0
+  # Set only when service.type=LoadBalancer and the cluster provider supports it.
+  loadBalancerIP: ""
+  # CLI-friendly alternative to loadBalancerSourceRanges, for example:
+  # --set-string service.loadBalancerSourceRangesText='192.168.1.0/24 10.0.0.0/8'
+  loadBalancerSourceRangesText: ""
+  loadBalancerSourceRanges: []
+  externalTrafficPolicy: ""
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  # CLI-friendly single-host mode.
+  host: ""
+  path: /
+  pathType: Prefix
+  # Advanced multi-host mode. When set, this overrides ingress.host/path.
+  hosts: []
+  # Example:
+  # hosts:
+  #   - host: pilotwave.example.com
+  #     paths:
+  #       - path: /
+  #         pathType: Prefix
+  tls:
+    enabled: false
+    createSecret: false
+    secretName: ""
+    key: ""
+    certificate: ""
+    hosts: []
+  # Advanced raw TLS entries. When set, this overrides tls.enabled.
+  tlsEntries: []
+
+route:
+  enabled: false
+  host: ""
+  path: /
+  annotations: {}
+  wildcardPolicy: None
+  tls:
+    enabled: false
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+    key: ""
+    certificate: ""
+    caCertificate: ""
+    destinationCACertificate: ""
+
+metrics:
+  enabled: true
+  path: /metrics
+
+database:
+  type: sqlite3
+  dbpath: ./pilotwaveDB/pilotwave.db
+  dbname: pilotwave
+  debugMode: false
+
+auth:
+  method: built-in
+  secret:
+    # Set value for simple installs, or existingSecret/name/key to read from a Kubernetes Secret.
+    name: ""
+    value: ""
+    existingSecret: ""
+    key: auth-secret
+
+grafana:
+  provider: grafana
+  host: ""
+  port: 80
+  token: ""
+  datasourceId: "1"
+  tls: false
+  skipTlsVerify: false
+
+grafanaDashboard:
+  enabled: false
+  namespace: ""
+  labels:
+    grafana_dashboard: "1"
+  annotations: {}
+
+prometheusRule:
+  enabled: false
+  namespace: ""
+  labels: {}
+  annotations: {}
+
+serviceMonitor:
+  enabled: false
+  namespace: ""
+  labels: {}
+  annotations: {}
+  interval: ""
+  scrapeTimeout: ""
+  honorLabels: false
+  scheme: ""
+  tlsConfig: {}
+  relabelings: []
+  metricRelabelings: []
+
+istioPodMonitor:
+  enabled: false
+  namespace: ""
+  labels: {}
+  annotations: {}
+  targetNamespace: istio-system
+  selector:
+    app: istio-ingressgateway
+  port: http-envoy-prom
+  path: /stats/prometheus
+  interval: ""
+  scrapeTimeout: ""
+  relabelings: []
+  metricRelabelings: []
+
+gateway:
+  tlsSecretNamespace: istio-system
+
+istio:
+  # Keep false to allow installing Pilotwave before Istio is present.
+  required: false
+  # Checked only when istio.required=true.
+  requiredCRDs:
+    - gateways.networking.istio.io
+    - virtualservices.networking.istio.io
+    - destinationrules.networking.istio.io
+    - authorizationpolicies.security.istio.io
+    - requestauthentications.security.istio.io
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+persistence:
+  enabled: false
+  existingClaim: ""
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+  mountPath: /pilotwaveDB
+
+podAnnotations: {}
+
+resources: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+readinessProbe:
+  enabled: false
+  path: /metrics
+  port: pilotwaveport
+  scheme: HTTP
+  httpHeaders: []
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3
+
+livenessProbe:
+  enabled: false
+  path: /metrics
+  port: pilotwaveport
+  scheme: HTTP
+  httpHeaders: []
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

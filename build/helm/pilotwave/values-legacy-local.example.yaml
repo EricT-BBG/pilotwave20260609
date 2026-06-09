@@ -1,0 +1,53 @@
+# Legacy local validation values for colima-legacy-1-18.
+# Copy this file or pass it with:
+#   make helm-upgrade HELM_KUBE_CONTEXT=colima-legacy-1-18 HELM_ARGS='-f build/helm/pilotwave/values-legacy-local.example.yaml --set image.tag=<commit>'
+
+image:
+  repository: pilotwave
+  tag: "<commit>"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+
+metrics:
+  enabled: true
+  path: /metrics
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  honorLabels: true
+  labels:
+    release: legacy-monitoring
+  metricRelabelings:
+    - sourceLabels: [exported_namespace]
+      regex: (.+)
+      targetLabel: namespace
+      replacement: $1
+      action: replace
+    - regex: exported_namespace
+      action: labeldrop
+
+istioPodMonitor:
+  enabled: true
+  namespace: monitoring
+  labels:
+    release: legacy-monitoring
+  interval: 15s
+
+grafanaDashboard:
+  enabled: true
+  namespace: monitoring
+
+prometheusRule:
+  enabled: true
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: legacy-monitoring
+
+grafana:
+  provider: prometheus
+  host: legacy-monitoring-kube-pro-prometheus.monitoring.svc
+  port: 9090

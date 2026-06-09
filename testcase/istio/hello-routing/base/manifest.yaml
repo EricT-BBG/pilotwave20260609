@@ -1,0 +1,130 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pilotwave-istio-demo
+  labels:
+    istio-injection: disabled
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-v1
+  namespace: pilotwave-istio-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v1
+    spec:
+      containers:
+        - name: hello
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /www
+              echo "hello from v1" > /www/index.html
+              exec httpd -f -p 8080 -h /www
+          ports:
+            - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-v2
+  namespace: pilotwave-istio-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v2
+    spec:
+      containers:
+        - name: hello
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /www
+              echo "hello from v2" > /www/index.html
+              exec httpd -f -p 8080 -h /www
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  namespace: pilotwave-istio-demo
+spec:
+  selector:
+    app: hello
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: hello-gateway
+  namespace: pilotwave-istio-demo
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - hello.pilotwave.local
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: hello
+  namespace: pilotwave-istio-demo
+spec:
+  host: hello.pilotwave-istio-demo.svc.cluster.local
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hello
+  namespace: pilotwave-istio-demo
+spec:
+  hosts:
+    - hello.pilotwave.local
+  gateways:
+    - hello-gateway
+  http:
+    - name: route-to-v1
+      route:
+        - destination:
+            host: hello.pilotwave-istio-demo.svc.cluster.local
+            subset: v1
+            port:
+              number: 80
+          weight: 100

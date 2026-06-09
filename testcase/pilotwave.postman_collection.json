@@ -1,0 +1,1241 @@
+{
+	"info": {
+		"_postman_id": "dd84b81f-b5ec-4548-ab09-43d23d69d234",
+		"name": "pilotwave",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "http://localhost:22112/api/v1/users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/users?page=1&limit=2&search=leon&isDisabled=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								},
+								{
+									"key": "search",
+									"value": "leon"
+								},
+								{
+									"key": "isDisabled",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/users",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"leon\",\n  \"username\":\"leon\",\n  \"password\": \"1111\",\n  \"email\": \"test1@brobridge.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/user/:userid",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/user/3a8d70bb-6bc4-4b11-bb27-ecb4ae8ac819",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"3a8d70bb-6bc4-4b11-bb27-ecb4ae8ac819"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "dagin",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/user/:userid",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/user/28f88b7b-f4ee-4eba-b2e0-fb5df0fe867d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"28f88b7b-f4ee-4eba-b2e0-fb5df0fe867d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/user/:userid",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"leon@brobridge.com\",\n    \"name\": \"leonn\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/user/3a8d70bb-6bc4-4b11-bb27-ecb4ae8ac819",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"3a8d70bb-6bc4-4b11-bb27-ecb4ae8ac819"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/user/:userid/enable",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/user/3a8d70bb-6bc4-4b11-bb27-ecb4ae8ac819/enabled",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"3a8d70bb-6bc4-4b11-bb27-ecb4ae8ac819",
+								"enabled"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "gateway",
+			"item": [
+				{
+					"name": "http://localhost:22112/api/v1/gateways",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateways?page=1&limit=30",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateways"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "30"
+								},
+								{
+									"key": "search",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "namespace",
+									"value": "test",
+									"disabled": true
+								},
+								{
+									"key": "isDisabled",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateways",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"ga6\",\n    \"host\": \"auth.brobridge.com\",\n    \"description\": \"xxxxxxx\",\n    \"ports\": [{\n\t\"port\": 443,\n\t\"protocol\": \"https\",\n\t\"cert\": \"/etc/html/ooo.pem\",\n    \"pkey\": \"/etc/html/ooo.pem\"\n},\n{\n\t\"port\": 8080,\n\t\"protocol\": \"http\",\n\t\"cert\": \"\",\n    \"pkey\": \"\"\n}],\n    \"namespace\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateways",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateways"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/19abeddd-2c65-429d-96e5-2204b31328de",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"19abeddd-2c65-429d-96e5-2204b31328de"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/67dc8cc3-a441-43ec-8438-4e73bb94304b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"67dc8cc3-a441-43ec-8438-4e73bb94304b"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "dagin",
+									"disabled": true
+								},
+								{
+									"key": "namespace",
+									"value": "xxx",
+									"disabled": true
+								},
+								{
+									"key": "isDisabled",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id/enabled",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"enabled\": \"\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/67dc8cc3-a441-43ec-8438-4e73bb94304b/enabled",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"67dc8cc3-a441-43ec-8438-4e73bb94304b",
+								"enabled"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"ga66\",\n    \"host\": \"xxx.brobridge.com\",\n    \"description\": \"desssss\",\n    \"ports\": [{\n\t\"port\": 4433,\n\t\"protocol\": \"https\",\n\t\"cert\": \"/etc/html/ooo.pem\",\n    \"pkey\": \"/etc/html/ooo.pem\"\n},\n{\n\t\"port\": 8080,\n\t\"protocol\": \"http\",\n\t\"cert\": \"\",\n    \"pkey\": \"\"\n}],\n    \"namespace\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/032094b1-992e-443c-96d7-1ee7a262ae7f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"032094b1-992e-443c-96d7-1ee7a262ae7f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id/bwlists",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/0f24014c-5512-4a00-8a87-b0a5dee7d50c/bwlists?page=1&limit=3&category=white",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"0f24014c-5512-4a00-8a87-b0a5dee7d50c",
+								"bwlists"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								},
+								{
+									"key": "search",
+									"value": "xx",
+									"disabled": true
+								},
+								{
+									"key": "category",
+									"value": "white"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id/bwlists",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"domain\": \"auth.brobridge.com\",\n    \"category\": \"blacklist\",\n    \"description\": \"xxxxxxx\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/0f24014c-5512-4a00-8a87-b0a5dee7d50c/bwlists",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"0f24014c-5512-4a00-8a87-b0a5dee7d50c",
+								"bwlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/bwlist/:id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/bwlist/61fed542-7f2d-4096-bd79-0dd25008afd2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"bwlist",
+								"61fed542-7f2d-4096-bd79-0dd25008afd2"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "dagin",
+									"disabled": true
+								},
+								{
+									"key": "namespace",
+									"value": "xxx",
+									"disabled": true
+								},
+								{
+									"key": "isDisabled",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id/routers",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"33a1520a-3909-4427-bff1-b3726d098a47\", \"474d2ea0-2e44-4807-a3c0-8481254ad5b7\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/1b6dcdc7-292b-4a88-a403-a583db4058c6/routers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"1b6dcdc7-292b-4a88-a403-a583db4058c6",
+								"routers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/gateway/:id/routers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/gateway/1b6dcdc7-292b-4a88-a403-a583db4058c6/routers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"gateway",
+								"1b6dcdc7-292b-4a88-a403-a583db4058c6",
+								"routers"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "router",
+			"item": [
+				{
+					"name": "http://localhost:22112/api/v1/routers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/routers?page=2&limit=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"routers"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								},
+								{
+									"key": "search",
+									"value": "http",
+									"disabled": true
+								},
+								{
+									"key": "namespace",
+									"value": "test",
+									"disabled": true
+								},
+								{
+									"key": "isDisabled",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "protocol",
+									"value": "grpc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/routers",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"r4\",\n    \"description\": \"xxxxxxx\",\n    \"namespace\": \"default\",\n    \"protocol\": \"http\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/routers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"routers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/router/:id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/router/78ac31f2-21ad-471c-93b1-cf3b669e01d7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"router",
+								"78ac31f2-21ad-471c-93b1-cf3b669e01d7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/router/:id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/router/432b7ee9-7a74-4215-b84d-96a398c3c074",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"router",
+								"432b7ee9-7a74-4215-b84d-96a398c3c074"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/router/:id/enabled",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"enabled\": true}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/router/7966c469-08c3-4b2c-a95e-61cf79d666e3/enabled",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"router",
+								"7966c469-08c3-4b2c-a95e-61cf79d666e3",
+								"enabled"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/router/:id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"r2\",\n    \"description\": \"xx11\",\n    \"namespace\": \"test\",\n    \"protocol\": \"grpc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/router/7966c469-08c3-4b2c-a95e-61cf79d666e3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"router",
+								"7966c469-08c3-4b2c-a95e-61cf79d666e3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/router/:id/gateways",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/router/474d2ea0-2e44-4807-a3c0-8481254ad5b7/gateways",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"router",
+								"474d2ea0-2e44-4807-a3c0-8481254ad5b7",
+								"gateways"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:22112/api/v1/router/:id/gateways",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"9f89c2f3-2e2a-4803-97b0-e662f7316869\", \"9f89c2f3-2e2a-4803-97b0-e662f7316869\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:22112/api/v1/router/474d2ea0-2e44-4807-a3c0-8481254ad5b7/gateways",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "22112",
+							"path": [
+								"api",
+								"v1",
+								"router",
+								"474d2ea0-2e44-4807-a3c0-8481254ad5b7",
+								"gateways"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "http://localhost:22112/api/v1/auth/signin",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\":\"admin\",\n  \"password\": \"1111\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:22112/api/v1/auth/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "22112",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

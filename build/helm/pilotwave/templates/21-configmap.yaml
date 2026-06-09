@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pilotwave.configMapName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "pilotwave.labels" . | indent 4 }}
+data:
+  config.toml: |
+    [service]
+    port = {{ .Values.service.targetPort }}
+
+    [database]
+    type = {{ .Values.database.type | quote }}
+    dbpath = {{ .Values.database.dbpath | quote }}
+    dbname = {{ .Values.database.dbname | quote }}
+    debug_mode = {{ .Values.database.debugMode }}
+
+    [auth]
+    method = {{ .Values.auth.method | quote }}
+    secret = ""
+
+    [grafana]
+    provider = {{ .Values.grafana.provider | quote }}
+    host = {{ .Values.grafana.host | quote }}
+    port = {{ .Values.grafana.port }}
+    token = {{ .Values.grafana.token | quote }}
+    datasource_id = {{ .Values.grafana.datasourceId | quote }}
+    tls = {{ .Values.grafana.tls }}
+    skip_tls_verify = {{ .Values.grafana.skipTlsVerify }}
+
+    [cluster]
+    disabled = false
+
+    [dev]
+    reset_admin_password = false
+
+    [gateway]
+    tls_secret_namespace = {{ .Values.gateway.tlsSecretNamespace | quote }}

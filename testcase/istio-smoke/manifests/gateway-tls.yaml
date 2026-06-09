@@ -1,0 +1,38 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: hello-tls-gateway
+  namespace: pilotwave-istio-smoke
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: pilotwave-istio-smoke-tls
+      hosts:
+        - smoke-tls.pilotwave.local
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hello-tls
+  namespace: pilotwave-istio-smoke
+spec:
+  hosts:
+    - smoke-tls.pilotwave.local
+  gateways:
+    - hello-tls-gateway
+  http:
+    - name: route-to-v1
+      route:
+        - destination:
+            host: hello.pilotwave-istio-smoke.svc.cluster.local
+            subset: v1
+            port:
+              number: 80
+          weight: 100

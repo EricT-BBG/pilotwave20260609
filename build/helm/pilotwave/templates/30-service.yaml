@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+{{- $metricsAnnotations := dict }}
+{{- if .Values.metrics.enabled }}
+{{- $_ := set $metricsAnnotations "prometheus.io/scrape" "true" }}
+{{- $_ := set $metricsAnnotations "prometheus.io/path" .Values.metrics.path }}
+{{- $_ := set $metricsAnnotations "prometheus.io/port" (toString .Values.service.port) }}
+{{- end }}
+{{- $annotations := mergeOverwrite $metricsAnnotations .Values.service.annotations }}
+metadata:
+  name: {{ include "pilotwave.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "pilotwave.labels" . | indent 4 }}
+  {{- with $annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  {{- with .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  {{- $loadBalancerSourceRanges := .Values.service.loadBalancerSourceRanges }}
+  {{- if and (not $loadBalancerSourceRanges) .Values.service.loadBalancerSourceRangesText }}
+  {{- $loadBalancerSourceRanges = splitList " " .Values.service.loadBalancerSourceRangesText }}
+  {{- end }}
+  {{- with $loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- if or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort") }}
+  {{- with .Values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . | quote }}
+  {{- end }}
+  {{- end }}
+  selector:
+{{ include "pilotwave.selectorLabels" . | indent 4 }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}

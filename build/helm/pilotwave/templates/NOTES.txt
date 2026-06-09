@@ -1,0 +1,39 @@
+Pilotwave has been installed into namespace {{ .Release.Namespace }}.
+
+Service:
+  {{ include "pilotwave.fullname" . }}:{{ .Values.service.port }}
+
+Auth secret:
+{{- if .Values.auth.secret.existingSecret }}
+  Existing Secret {{ .Values.auth.secret.existingSecret }} key {{ include "pilotwave.authSecretKey" . }}
+{{- else }}
+  Managed Secret {{ include "pilotwave.authSecretName" . }} key {{ include "pilotwave.authSecretKey" . }}
+{{- end }}
+
+To connect from your workstation:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "pilotwave.fullname" . }} 22112:{{ .Values.service.port }}
+
+Then open:
+  http://127.0.0.1:22112
+
+Metrics:
+  http://127.0.0.1:22112{{ .Values.metrics.path }}
+{{- if .Values.istio.required }}
+
+Istio preflight:
+  Required Istio CRDs were checked during rendering with Helm lookup.
+{{- else }}
+
+Istio preflight:
+  Disabled. Set istio.required=true to fail fast when required Istio CRDs are missing.
+{{- end }}
+{{- if and .Values.ingress.enabled .Values.ingress.host }}
+
+Ingress:
+  http{{ if .Values.ingress.tls.enabled }}s{{ end }}://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+{{- end }}
+{{- if and .Values.route.enabled .Values.route.host }}
+
+OpenShift Route:
+  http{{ if .Values.route.tls.enabled }}s{{ end }}://{{ .Values.route.host }}{{ .Values.route.path }}
+{{- end }}

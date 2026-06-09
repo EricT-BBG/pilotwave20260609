@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: pilotwave-istio-smoke-deny-path
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  action: DENY
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - smoke.pilotwave.local
+            paths:
+              - /deny

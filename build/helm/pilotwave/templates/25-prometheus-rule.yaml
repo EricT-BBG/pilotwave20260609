@@ -1,0 +1,120 @@
+{{- if .Values.prometheusRule.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ printf "%s-alerts" (include "pilotwave.fullname" .) | trunc 63 | trimSuffix "-" }}
+  namespace: {{ default .Release.Namespace .Values.prometheusRule.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "pilotwave.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/component: monitoring
+    role: alert-rules
+{{- with .Values.prometheusRule.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  {{- with .Values.prometheusRule.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  groups:
+    - name: pilotwave.app.metrics
+      rules:
+        - alert: PilotwaveIstioTLSCertificateExpiringSoon
+          expr: |
+            min by (namespace, gateway, secret) (pilotwave_istio_tls_certificate_days_until_expiry) < 30
+          for: 30m
+          labels:
+            severity: warning
+            service: pilotwave
+            category: tls
+          annotations:
+            summary: "Pilotwave Istio TLS certificate expires in less than 30 days"
+            description: "Gateway {{`{{ $labels.namespace }}`}}/{{`{{ $labels.gateway }}`}} uses TLS secret {{`{{ $labels.secret }}`}} with {{`{{ $value }}`}} days until expiry."
+
+        - alert: PilotwaveIstioTLSCertificateExpired
+          expr: |
+            pilotwave_istio_tls_certificate_expired == 1
+          for: 5m
+          labels:
+            severity: critical
+            service: pilotwave
+            category: tls
+          annotations:
+            summary: "Pilotwave Istio TLS certificate is expired"
+            description: "Gateway {{`{{ $labels.namespace }}`}}/{{`{{ $labels.gateway }}`}} uses expired TLS secret {{`{{ $labels.secret }}`}}."
+
+        - alert: PilotwaveIstioGatewayTLSSecretMissing
+          expr: |
+            pilotwave_istio_gateway_tls_secret_missing == 1
+          for: 10m
+          labels:
+            severity: critical
+            service: pilotwave
+            category: tls
+          annotations:
+            summary: "Pilotwave Istio Gateway TLS secret is missing"
+            description: "Gateway {{`{{ $labels.namespace }}`}}/{{`{{ $labels.gateway }}`}} references missing TLS secret {{`{{ $labels.secret }}`}}. Reason: {{`{{ $labels.reason }}`}}."
+
+        - alert: PilotwaveIstioGatewayTLSSecretInvalid
+          expr: |
+            pilotwave_istio_gateway_tls_secret_invalid == 1
+          for: 10m
+          labels:
+            severity: critical
+            service: pilotwave
+            category: tls
+          annotations:
+            summary: "Pilotwave Istio Gateway TLS secret is invalid"
+            description: "Gateway {{`{{ $labels.namespace }}`}}/{{`{{ $labels.gateway }}`}} references invalid TLS secret {{`{{ $labels.secret }}`}}. Reason: {{`{{ $labels.reason }}`}}."
+
+        - alert: PilotwaveKubernetesWriteConflicts
+          expr: |
+            sum by (resource, verb) (increase(pilotwave_kubernetes_write_conflicts_total[10m])) > 5
+          for: 10m
+          labels:
+            severity: warning
+            service: pilotwave
+            category: kubernetes
+          annotations:
+            summary: "Pilotwave Kubernetes write conflicts detected"
+            description: "Pilotwave saw {{`{{ $value }}`}} write conflicts for {{`{{ $labels.verb }}`}} {{`{{ $labels.resource }}`}} operations over 10 minutes."
+
+        - alert: PilotwaveHighHTTP5xxRate
+          expr: |
+            (
+              sum(rate(pilotwave_http_requests_total{status=~"5.."}[5m]))
+              /
+              clamp_min(sum(rate(pilotwave_http_requests_total[5m])), 0.001)
+            ) > 0.05
+            and
+            sum(rate(pilotwave_http_requests_total[5m])) > 0.1
+          for: 10m
+          labels:
+            severity: critical
+            service: pilotwave
+            category: http
+          annotations:
+            summary: "Pilotwave HTTP 5xx rate is high"
+            description: "More than 5% of Pilotwave HTTP requests have returned 5xx responses for 10 minutes."
+
+        - alert: PilotwaveHighP95Latency
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (le) (rate(pilotwave_http_request_duration_seconds_bucket[5m]))
+            ) > 1
+            and
+            sum(rate(pilotwave_http_requests_total[5m])) > 0.1
+          for: 10m
+          labels:
+            severity: warning
+            service: pilotwave
+            category: http
+          annotations:
+            summary: "Pilotwave HTTP p95 latency is high"
+            description: "Pilotwave HTTP p95 latency has been above 1 second for 10 minutes."
+{{- end }}

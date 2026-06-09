@@ -1,0 +1,382 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Pilotwave Swagger",
+        "termsOfService": "http://brobrodge.com/",
+        "contact": {},
+        "license": {},
+        "version": "1.0"
+    },
+    "host": "localhost:22112",
+    "basePath": "/",
+    "paths": {
+        "/api/v1/router/{routerId}/lantency": {
+            "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "router"
+                ],
+                "summary": "Get Router's lantency metrics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "router name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "service",
+                        "name": "service",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "startTime",
+                        "name": "startTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endTime",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "30s",
+                        "description": "interval",
+                        "name": "interval",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "default": 0.99,
+                        "description": "percentage",
+                        "name": "percentage",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "http return code",
+                        "schema": {
+                            "$ref": "#/definitions/router_manager.RouterLantencyResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/router/{routerId}/ops": {
+            "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "router"
+                ],
+                "summary": "Get Router's ops metrics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "router name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "service",
+                        "name": "service",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "startTime",
+                        "name": "startTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endTime",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "30s",
+                        "description": "interval",
+                        "name": "interval",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "http return code",
+                        "schema": {
+                            "$ref": "#/definitions/router_manager.RouterOPSResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/router/{routerId}/successRate": {
+            "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "router"
+                ],
+                "summary": "Get Router's Request Success Rate metrics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "router name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "namespace",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "service",
+                        "name": "service",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "startTime",
+                        "name": "startTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endTime",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "30s",
+                        "description": "interval",
+                        "name": "interval",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "http return code",
+                        "schema": {
+                            "$ref": "#/definitions/router_manager.RouterSuccessRateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/routers": {
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "router"
+                ],
+                "summary": "Create Router",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/router_manager.RouterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "http return code",
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.CreateResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "router_manager.RouterLantencyData": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
+        "router_manager.RouterLantencyResponse": {
+            "type": "object",
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/router_manager.RouterLantencyData"
+                    }
+                }
+            }
+        },
+        "router_manager.RouterOPSData": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
+        "router_manager.RouterOPSResponse": {
+            "type": "object",
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/router_manager.RouterOPSData"
+                    }
+                }
+            }
+        },
+        "router_manager.RouterRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "description": "Description string `json:\"description\"`",
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "string"
+                }
+            }
+        },
+        "router_manager.RouterSuccessRateData": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
+        "router_manager.RouterSuccessRateResponse": {
+            "type": "object",
+            "properties": {
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/router_manager.RouterSuccessRateData"
+                    }
+                },
+                "successRate": {
+                    "type": "number"
+                },
+                "totalReqests": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Authentication": {
+            "type": "apiKey",
+            "name": "authentication",
+            "in": "header"
+        }
+    }
+}

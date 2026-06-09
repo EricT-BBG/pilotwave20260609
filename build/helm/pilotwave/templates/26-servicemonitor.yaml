@@ -1,0 +1,53 @@
+{{- if and .Values.serviceMonitor .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ printf "%s-monitor" (include "pilotwave.fullname" .) | trunc 63 | trimSuffix "-" }}
+  namespace: {{ default .Release.Namespace .Values.serviceMonitor.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "pilotwave.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/component: monitoring
+{{- with .Values.serviceMonitor.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  {{- with .Values.serviceMonitor.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+  {{- end }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+{{ include "pilotwave.labels" . | indent 6 }}
+  endpoints:
+    - port: http
+      path: {{ .Values.metrics.path | quote }}
+      honorLabels: {{ .Values.serviceMonitor.honorLabels }}
+      {{- with .Values.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+      {{- with .Values.serviceMonitor.scheme }}
+      scheme: {{ . }}
+      {{- end }}
+      {{- with .Values.serviceMonitor.tlsConfig }}
+      tlsConfig:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.serviceMonitor.relabelings }}
+      relabelings:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+{{- end }}

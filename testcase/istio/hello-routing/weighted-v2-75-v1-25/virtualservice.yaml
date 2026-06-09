@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: hello
+  namespace: pilotwave-istio-demo
+spec:
+  hosts:
+    - hello.pilotwave.local
+  gateways:
+    - hello-gateway
+  http:
+    - name: route-v2-75-v1-25
+      route:
+        - destination:
+            host: hello.pilotwave-istio-demo.svc.cluster.local
+            subset: v2
+            port:
+              number: 80
+          weight: 75
+        - destination:
+            host: hello.pilotwave-istio-demo.svc.cluster.local
+            subset: v1
+            port:
+              number: 80
+          weight: 25
