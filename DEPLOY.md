@@ -57,9 +57,12 @@ helm -n pilotwave uninstall pilotwave
 
 ## 疑難排解
 
-- **Pod 卡在 `ImagePullBackOff`**：表示映像沒有成功匯入叢集 runtime。腳本最後若印出警告，依提示手動匯入，例如：
+- **Pod 卡在 `ImagePullBackOff` / `ErrImageNeverPull`**：表示映像沒有成功匯入叢集 runtime。腳本會用 `kubectl` 偵測節點 runtime（`containerd` 或 `cri-o`）並自動匯入；若仍失敗，依 runtime 手動匯入後再跑一次 `./deploy`：
   ```sh
-  docker save pilotwave:local | sudo ctr -n k8s.io images import -
+  # containerd（kubeadm 等）
+  podman save localhost/pilotwave:local | sudo ctr -n k8s.io images import -
+  # CRI-O（rootful podman 與 CRI-O 共用 storage）
+  podman save localhost/pilotwave:local -o img.tar && sudo podman load -i img.tar
   ```
 - **Istio CRD 缺失 / Pilotwave 操作 Istio 資源失敗**：確認 `ISTIO_VERSION` 與叢集 Kubernetes 版本相容，並確認 `kubectl get crd | grep istio` 有出現 gateways / virtualservices / authorizationpolicies / requestauthentications。
 - **看 log**：`kubectl -n pilotwave logs deploy/pilotwave -f`

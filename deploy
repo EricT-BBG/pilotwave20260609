@@ -27,8 +27,10 @@ set -Eeuo pipefail
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Image
-IMAGE_NAME="${IMAGE_NAME:-pilotwave}"
+# Image. The fully-qualified `localhost/` prefix is important: it resolves to the
+# same name under both containerd (k8s.io namespace) and CRI-O, so the pod's
+# image reference matches the locally-imported image on either runtime.
+IMAGE_NAME="${IMAGE_NAME:-localhost/pilotwave}"
 IMAGE_TAG="${IMAGE_TAG:-local}"
 IMAGE_REF="${IMAGE_NAME}:${IMAGE_TAG}"
 
@@ -153,51 +155,84 @@ ok "Image built: ${IMAGE_REF}"
 # ===========================================================================
 step "4/6  Importing image into the cluster runtime"
 
-import_via_tar() {
-  # $1 = import command (array passed as remaining args reads from stdin tar)
-  local tar="/tmp/${IMAGE_NAME}-${IMAGE_TAG}.tar"
-  info "Saving image to ${tar}…"
-  "$BUILDER" save "${IMAGE_REF}" -o "$tar"
-  "$@" < "$tar"
-  rm -f "$tar"
+IMAGE_TAR="/tmp/pilotwave-image.tar"
+save_tar() {
+  [ -f "$IMAGE_TAR" ] && return 0
+  info "Exporting image to ${IMAGE_TAR}…"
+  "$BUILDER" save "${IMAGE_REF}" -o "$IMAGE_TAR"
+}
+
+# Locate a `ctr` binary even when it is not on PATH (common on kubeadm nodes).
+find_ctr() {
+  if command -v ctr >/dev/null 2>&1; then command -v ctr; return 0; fi
+  for c in /usr/bin/ctr /usr/local/bin/ctr /var/lib/rancher/k3s/data/current/bin/ctr; do
+    [ -x "$c" ] && { echo "$c"; return 0; }
+  done
+  return 1
+}
+
+# Import a docker-archive tar into containerd's k8s.io namespace.
+import_into_containerd() {
+  local ctr; if ! ctr="$(find_ctr)"; then
+    if have nerdctl; then
+      save_tar; maybe_sudo nerdctl --namespace k8s.io load -i "$IMAGE_TAR"; return $?
+    fi
+    return 1
+  fi
+  save_tar; maybe_sudo "$ctr" -n k8s.io images import "$IMAGE_TAR"
+}
+
+# Make the image visible to CRI-O, which reads rootful containers/storage.
+# `sudo podman load` writes to that shared store; skopeo is the fallback.
+import_into_crio() {
+  save_tar
+  if have podman; then maybe_sudo podman load -i "$IMAGE_TAR"; return $?; fi
+  if have skopeo; then maybe_sudo skopeo copy "docker-archive:${IMAGE_TAR}" "containers-storage:${IMAGE_REF}"; return $?; fi
+  return 1
 }
 
 loaded=""
 if have k3s; then
   info "Detected k3s — importing into k3s containerd."
-  import_via_tar maybe_sudo k3s ctr images import -
-  loaded="k3s"
+  save_tar && maybe_sudo k3s ctr images import "$IMAGE_TAR" && loaded="k3s"
 elif have rke2; then
   info "Detected RKE2 — importing into rke2 containerd."
-  import_via_tar maybe_sudo rke2 ctr images import -
-  loaded="rke2"
+  save_tar && maybe_sudo rke2 ctr images import "$IMAGE_TAR" && loaded="rke2"
 elif have microk8s; then
   info "Detected microk8s — importing image."
-  import_via_tar microk8s ctr images import -
-  loaded="microk8s"
+  save_tar && maybe_sudo microk8s ctr images import "$IMAGE_TAR" && loaded="microk8s"
 elif have minikube && minikube status >/dev/null 2>&1; then
   info "Detected minikube — loading image."
-  minikube image load "${IMAGE_REF}"
-  loaded="minikube"
+  minikube image load "${IMAGE_REF}" && loaded="minikube"
 elif have kind && [ -n "$(kind get clusters 2>/dev/null)" ]; then
   info "Detected kind — loading image into cluster '$(kind get clusters | head -1)'."
-  kind load docker-image "${IMAGE_REF}" --name "$(kind get clusters | head -1)"
-  loaded="kind"
-elif have ctr; then
-  info "Detected containerd (ctr) — importing into the k8s.io namespace."
-  import_via_tar maybe_sudo ctr -n k8s.io images import -
-  loaded="containerd"
-elif [ "$BUILDER" = "docker" ] && have crictl && crictl info 2>/dev/null | grep -qi docker; then
-  loaded="docker-runtime"
+  kind load docker-image "${IMAGE_REF}" --name "$(kind get clusters | head -1)" && loaded="kind"
+else
+  # Ask the cluster which runtime the node actually uses, e.g. "containerd://1.7.x"
+  # or "cri-o://1.31.0". This is far more reliable than probing PATH.
+  RUNTIME="$(kubectl get nodes -o jsonpath='{.items[0].status.nodeInfo.containerRuntimeVersion}' 2>/dev/null || true)"
+  info "Node container runtime: ${RUNTIME:-unknown}"
+  case "$RUNTIME" in
+    containerd*) import_into_containerd && loaded="containerd" ;;
+    cri-o*)      import_into_crio && loaded="cri-o" ;;
+    docker*)     loaded="docker-runtime" ;;  # image already in docker's store
+    *)
+      # Unknown string — try containerd, then CRI-O, as a best effort.
+      if import_into_containerd; then loaded="containerd"
+      elif import_into_crio; then loaded="cri-o"; fi
+      ;;
+  esac
 fi
+rm -f "$IMAGE_TAR" 2>/dev/null || true
 
 if [ -n "$loaded" ]; then
-  ok "Image available to the cluster (${loaded})."
+  ok "Image imported into the cluster runtime (${loaded})."
 else
-  warn "Could not auto-detect the cluster container runtime."
-  warn "The image '${IMAGE_REF}' was built locally but may not be visible to the cluster."
-  warn "If pods stay in ImagePullBackOff, import it manually, e.g.:"
-  warn "    ${BUILDER} save ${IMAGE_REF} | sudo ctr -n k8s.io images import -"
+  warn "Could not import the image into the cluster runtime automatically."
+  warn "The image '${IMAGE_REF}' was built locally. Import it manually for your runtime:"
+  warn "    containerd:  ${BUILDER} save ${IMAGE_REF} | sudo ctr -n k8s.io images import -"
+  warn "    CRI-O:       ${BUILDER} save ${IMAGE_REF} -o img.tar && sudo podman load -i img.tar"
+  warn "Then re-run ./deploy."
 fi
 
 # ===========================================================================
@@ -215,7 +250,19 @@ if [ ! -f "$AUTH_SECRET_FILE" ]; then
 fi
 AUTH_SECRET="$(cat "$AUTH_SECRET_FILE")"
 
+# A previous interrupted run can leave the release in a failed/pending state
+# that blocks a clean reinstall. Remove anything that isn't fully deployed.
+PREV_STATUS="$(helm -n "${NAMESPACE}" status "${RELEASE}" -o json 2>/dev/null \
+  | tr ',' '\n' | grep -o '"status":"[a-z-]*"' | head -1 | cut -d'"' -f4 || true)"
+if [ -n "$PREV_STATUS" ] && [ "$PREV_STATUS" != "deployed" ]; then
+  warn "Previous release is in '${PREV_STATUS}' state — uninstalling it first."
+  helm -n "${NAMESPACE}" uninstall "${RELEASE}" >/dev/null 2>&1 || true
+fi
+
 info "Release '${RELEASE}' in namespace '${NAMESPACE}', NodePort ${NODE_PORT}."
+# No --wait here: Helm returns as soon as the objects are applied, so a slow
+# image start can't make the whole install "fail". We wait explicitly below and
+# surface real diagnostics if the rollout stalls.
 helm upgrade --install "${RELEASE}" "${SCRIPT_DIR}/build/helm/pilotwave" \
   --namespace "${NAMESPACE}" --create-namespace \
   --set image.repository="${IMAGE_NAME}" \
@@ -223,8 +270,7 @@ helm upgrade --install "${RELEASE}" "${SCRIPT_DIR}/build/helm/pilotwave" \
   --set image.pullPolicy=IfNotPresent \
   --set service.type=NodePort \
   --set service.nodePort="${NODE_PORT}" \
-  --set-string auth.secret.value="${AUTH_SECRET}" \
-  --wait --timeout 5m
+  --set-string auth.secret.value="${AUTH_SECRET}"
 ok "Helm release applied."
 
 # ===========================================================================
@@ -232,7 +278,21 @@ ok "Helm release applied."
 # ===========================================================================
 step "6/6  Waiting for Pilotwave to become ready"
 
-kubectl -n "${NAMESPACE}" rollout status deploy --timeout=180s || true
+if kubectl -n "${NAMESPACE}" rollout status deploy/"${RELEASE}" --timeout=180s; then
+  ok "Deployment is ready."
+else
+  warn "Deployment did not become ready in time. Current state:"
+  kubectl -n "${NAMESPACE}" get pods -o wide || true
+  echo
+  warn "Recent events:"
+  kubectl -n "${NAMESPACE}" get events --sort-by=.lastTimestamp 2>/dev/null | tail -15 || true
+  echo
+  warn "If a pod shows ImagePullBackOff/ErrImageNeverPull, the image import step"
+  warn "above did not make '${IMAGE_REF}' visible to the cluster runtime. Import it"
+  warn "manually (see the hint in step 4) and re-run ./deploy."
+  die "Pilotwave is not ready yet — see diagnostics above."
+fi
+
 ACTUAL_PORT="$(kubectl -n "${NAMESPACE}" get svc -l app.kubernetes.io/instance="${RELEASE}" \
   -o jsonpath='{.items[0].spec.ports[0].nodePort}' 2>/dev/null || echo "${NODE_PORT}")"
 [ -n "$ACTUAL_PORT" ] || ACTUAL_PORT="${NODE_PORT}"
